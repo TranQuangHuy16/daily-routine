@@ -99,3 +99,25 @@ export const signIn = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const signOut = async (req, res) => {
+  try {
+    // lấy refresh token từ cookie
+    const token = req.cookies?.refreshToken;
+
+    // xóa refresh token trong session
+    if (token) {
+      await Session.findOneAndDelete({ refreshToken: token });
+    }
+    //xóa cookie
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+    });
+
+    return res.sendStatus(204);
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
